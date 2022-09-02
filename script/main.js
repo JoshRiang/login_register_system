@@ -16,6 +16,7 @@ function carousel() {
 }
 
 function signIn() {
+  var users = getData();
   var email = $("#emailUsername-login-input").val();
   var pass = $("#password-login-input").val();
   for (let i = 0; i < users.length; i++) {
@@ -34,6 +35,7 @@ function signIn() {
 }
 
 function checkingLogInInput() {
+  var users = getData();
   // checking input email have @ and .
   var email = $("#emailUsername-login-input").val();
   var atpos = email.indexOf("@");
