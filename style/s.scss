@@ -1,5 +1,9 @@
 @import url("https://fonts.googleapis.com/css2?family=Lobster&display=swap");
 
+body {
+  padding-top: 58px;
+}
+
 .font-lobster {
   font-family: "Lobster", cursive;
 }
@@ -26,8 +30,14 @@
 }
 
 #inputContainer {
+  width: 348px;
   background-color: #ffffff;
   border: solid 1px #e6e9ed;
+}
+
+#signUpContainer {
+  width: 348px;
+  height: 63px;
 }
 
 .divider {
@@ -48,17 +58,17 @@
   height: 1.2px;
   position: relative;
   vertical-align: middle;
-  width: 50%;
+  width: 40%;
 }
 
 .divider:before {
-  right: 2em;
-  margin-left: -50%;
+  right: 1em;
+  margin-left: -25%;
 }
 
 .divider:after {
-  left: 2em;
-  margin-right: -50%;
+  left: 1em;
+  margin-right: -25%;
 }
 
 .fbwrapper {
@@ -118,11 +128,136 @@
   left: 105px;
 }
 
-//breakpoint for mobile
-@media (max-width: 576px) {
-  #inputContainer {
-    border: none;
+.slideshow {
+  position: relative;
+  width: 218px;
+  top: 20px;
+  left: 105px;
+}
+
+#navbar_home {
+  padding: 170px;
+}
+
+.form {
+  position: relative;
+  // width: 250px;
+  width: 100%;
+  height: 40px;
+
+  .toggle_password {
+    z-index: 5;
+    position: absolute;
+    right: 10px;
+    top: 7px;
+    background: none;
+    cursor: pointer;
+    outline: none;
+    transition: 0.3s;
+    color: black;
+    font-size: 15px;
+  }
+
+  .element-form {
+    z-index: 6;
+    position: relative;
+    margin-left: 88%;
+    top: 7px;
+    background: none;
+    outline: none;
+    transition: 0.3s;
+    font-size: 15px;
+  }
+
+  #signUpUsernameElement {
+    z-index: 6;
+    position: absolute;
+    left: 75%;
+    top: 7px;
+    background: none;
+    cursor: pointer;
+    outline: none;
+    font-size: 15px;
+  }
+
+  &__input {
+    font-size: 10px;
+    font-weight: 300;
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
+    height: 100%;
+    border: 1px solid #ced4da;
+    border-radius: 3px;
+    font-family: inherit;
+    font-size: inherit;
+    color: black;
+    outline: none;
+    padding: 5px 2px 0px 8px;
+
+    // background: none;
+    background-color: #fafafa;
+
+    &:hover {
+      border-color: #ced4da;
+    }
+
+    /* Change border when input focus*/
+
+    &:focus {
+      border-color: #ced4da;
+    }
+  }
+
+  &__label {
+    position: absolute;
+    // left: 1rem;
+    top: 25%;
+    padding: 0 0.5rem 0 0.5rem;
+    color: #6c757d;
+    cursor: text;
+    font-size: 12px;
+    transition: top 200ms ease-in, left 200ms ease-in, font-size 200ms ease-in;
+    // background-color: #f8f9fa;
+    background: none;
   }
 }
 
+.form__input:focus ~ .form__label,
+.form__input:not(:placeholder-shown).form__input:not(:focus) ~ .form__label {
+  top: -0.1px;
+  font-size: 10px;
+}
+
+.postingan {
+  width: 40%;
+}
+
+//breakpoint for tablet
+@media (max-width: 768px) {
+  .postingan {
+    width: 70%;
+  }
+}
+
+//breakpoint for mobile
+@media (max-width: 576px) {
+  body {
+    padding-top: 0px;
+  }
+
+  .postingan {
+    width: 100%;
+  }
+
+  #inputContainer {
+    border: none;
+    width: 100vw;
+    margin: 0;
+  }
+
+  #navbar_home {
+    padding: 10px;
+  }
+}
