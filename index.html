@@ -5,49 +5,131 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Joshgram</title>
     <link rel="stylesheet" href="style/s.css" />
-    <script src="script/framework/jquery-3.6.0.min.js"></script>
+    <script src="script/lib/jquery-3.6.0.min.js"></script>
+    <script src="script/lib/md5.min.js"></script>
+    <script src="https://kit.fontawesome.com/87de4b1b77.js" crossorigin="anonymous"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous" />
   </head>
-  <body style="padding: 32px; padding-top: 55px" class="d-flex justify-content-center align-items-center bg-fafafa">
-    <div class="left m-0 me-3 p-0 d-none d-md-block">
-      <div class="carousel p-0 m-0">
-        <img class="sliderimage img-fluid" src="https://www.instagram.com/static/images/homepage/screenshots/screenshot4-2x.png/8e9224a71939.png" />
-        <img class="sliderimage img-fluid" src="https://www.instagram.com/static/images/homepage/screenshots/screenshot3-2x.png/fe2540684ab2.png" />
-        <img class="sliderimage img-fluid" src="https://www.instagram.com/static/images/homepage/screenshots/screenshot2-2x.png/80b8aebdea57.png" />
-        <img class="sliderimage img-fluid" src="https://www.instagram.com/static/images/homepage/screenshots/screenshot1-2x.png/cfd999368de3.png" />
+  <body class="bg-fafafa p-0">
+    <nav class="navbar border-bottom py-2" id="navbar_home" style="background-color: #ffffff">
+      <a href="index.html" class="font-lobster text-decoration-none text-dark my-0 fs-3">Instaquotes</a>
+
+      <div class="dropdown dropstart m-0 p-0 ms-auto" style="width: 40px; height: fit-content">
+        <a href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><img class="img-fluid m-0 p-0 rounded-circle user_profile_pic" width="100%" alt="profile_pic" /></a>
+        <ul class="dropdown-menu">
+          <li>
+            <!-- <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modal_edit_profile"><i class="fa-regular fa-user"></i> Edit Profile</a> -->
+            <a class="dropdown-item" href="#" onclick="modalEditProfile()"><i class="fa-regular fa-user"></i> Edit Profile</a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="#"><i class="fa-solid fa-plus"></i> New Quotes</a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="#"><i class="fa-solid fa-quote-left"></i> My Quotes</a>
+          </li>
+          <!-- divider -->
+          <li><hr class="dropdown-divider" /></li>
+          <li><a class="dropdown-item text-danger" onclick="logOut()">Log Out</a></li>
+        </ul>
+      </div>
+    </nav>
+    <!-- Modal Edit Profile -->
+    <div class="modal d-none" id="modal_edit_profile" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Edit Profile</h5>
+          </div>
+          <div class="modal-body d-flex flex-column justify-content-center align-items-center">
+            <div class="form mb-2">
+              <input type="text" id="username_edit_profile" class="loginInput form__input" autocomplete="off" placeholder=" " />
+              <label for="username_edit_profile" class="form__label">Your new username.</label>
+            </div>
+            <div class="form mb-2">
+              <input type="text" id="full_name_edit_profile" class="loginInput form__input" autocomplete="off" placeholder=" " />
+              <label for="full_name_edit_profile" class="form__label">Your full name.</label>
+            </div>
+            <img id="image_edit_profile_img" class="mb-2 ratio ratio-1x1" alt="my_profile" class="rounded-circle" />
+            <div class="form">
+              <input type="text" id="image_edit_profile" class="loginInput form__input" autocomplete="off" placeholder=" " />
+              <label for="image_edit_profile" class="form__label">Your profile picture.</label>
+            </div>
+            <p class="text-center mt-2 mb-0 text-danger fw-semibold" style="font-size: 12.4px" id="alert_edit_profile_modal"></p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeModalProfile()">Close</button>
+            <button type="submit" class="btn btn-primary" id="btn_edit_profile" onclick="editProfile()">Update</button>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="d-flex flex-column p-0">
-      <div id="inputContainer" class="m-0 d-flex px-5 text-dark flex-column container-sm align-items-center p-3" style="width: 348px; height: fit-content">
-        <p class="font-lobster fs-1 my-4">Instagram</p>
-        <input style="font-size: 12px" type="text" class="loginInput bg-fafafa mb-2 form-control rounded-1 text-bg-light p-2" id="emailUsername-login-input" placeholder="Username, or email" />
-        <input style="font-size: 12px" type="text" class="loginInput bg-fafafa form-control rounded-1 text-bg-light p-2" id="password-login-input" placeholder="Password" />
-        <button id="loginButton" class="mb-3 button p-0 m-0 text-light rounded-1 fw-semibold mt-3" onclick="signIn();" disabled>Log In</button>
-        <div class="divider mt-1 fw-light"><b>OR</b></div>
-        <div class="fbwrapper mt-3">
-          <div class="fb">
-            <a href="https://facebook.com">
-              <img src="https://cdn.pixabay.com/photo/2015/05/17/10/51/facebook-770688_960_720.png" />
-              Log in with Facebook
-            </a>
+    <div class="d-flex justify-content-center p-1">
+      <div class="d-flex flex-column align-items-center m-0 p-0">
+        <img class="user_profile_pic img-fluid m-0 p-0 rounded-circle ratio ratio-1x1" style="width: 180px" alt="prof_pic" />
+        <h1 class="user_username fs-2 mb-0 p-0"></h1>
+        <p class="fs-3 fw-light mt-0 p-0 user_fullname"></p>
+        <!-- postingan -->
+        <div class="postingan p-0 mb-3 rounded border d-flex flex-column justify-content-center">
+          <div class="d-flex align-items-center p-3">
+            <img class="me-3 user_profile_pic img-fluid m-0 p-0 rounded-circle ratio ratio-1x1" style="width: 40px" alt="prof_pic" />
+            Joshua Riangkamang
+          </div>
+          <h1 class="text-light py-5 text-center fs-2 text-bg-danger">"Jika memang bukan jodoh, biarkanlah dia pergi. Yang baru akan datang kepadamu"</h1>
+          <div class="px-3">
+            <div class="d-flex align-items-center my-2">
+              <i class="fa-regular fa-heart fs-4"></i>
+              <p class="ms-2 mb-0 fw-semibold">0</p>
+            </div>
+            <div class="d-flex flex-column mb-2">
+              <p>Ini adalah contoh caption, jika emang kamu butuh bantuan lebih lanjut bisa menghubungi kementrian kelautan</p>
+              <span>1 HOUR AGO</span>
+            </div>
           </div>
         </div>
-        <!-- make an alert message -->
-        <p class="text-center mt-2 mb-0 text-danger fw-semibold" style="font-size: 12.4px" id="alert-login"></p>
-        <div class="forgotwrapper mt-2">
-          <div class="forgot">
-            <a href="forgotpass.html">Forgot password?</a>
+        <!-- end postingan -->
+        <!-- postingan -->
+        <div class="postingan p-0 mb-3 rounded border d-flex flex-column justify-content-center">
+          <div class="d-flex align-items-center p-3">
+            <img class="me-3 user_profile_pic img-fluid m-0 p-0 rounded-circle ratio ratio-1x1" style="width: 40px" alt="prof_pic" />
+            Joshua Riangkamang
+          </div>
+          <h1 class="text-light py-5 text-center fs-2 text-bg-danger">"Jika memang bukan jodoh, biarkanlah dia pergi. Yang baru akan datang kepadamu"</h1>
+          <div class="px-3">
+            <div class="d-flex align-items-center my-2">
+              <i class="fa-regular fa-heart fs-4"></i>
+              <p class="ms-2 mb-0 fw-semibold">0</p>
+            </div>
+            <div class="d-flex flex-column mb-2">
+              <p>Ini adalah contoh caption, jika emang kamu butuh bantuan lebih lanjut bisa menghubungi kementrian kelautan</p>
+              <span>1 HOUR AGO</span>
+            </div>
           </div>
         </div>
-      </div>
-      <div id="signUpContainer" class="container-sm border mt-2 bg-ffffff" style="width: 348px; height: 63px">
-        <div class="infobox">
-          <p>Don't have an account? <a class="fw-semibold" href="signup.html">Sign up</a></p>
+        <!-- end postingan -->
+        <!-- postingan -->
+        <div class="postingan p-0 mb-3 rounded border d-flex flex-column justify-content-center">
+          <div class="d-flex align-items-center p-3">
+            <img class="me-3 user_profile_pic img-fluid m-0 p-0 rounded-circle ratio ratio-1x1" style="width: 40px" alt="prof_pic" />
+            Joshua Riangkamang
+          </div>
+          <h1 class="text-light py-5 text-center fs-2 text-bg-danger">"Jika memang bukan jodoh, biarkanlah dia pergi. Yang baru akan datang kepadamu"</h1>
+          <div class="px-3">
+            <div class="d-flex align-items-center my-2">
+              <i class="fa-regular fa-heart fs-4"></i>
+              <p class="ms-2 mb-0 fw-semibold">0</p>
+            </div>
+            <div class="d-flex flex-column mb-2">
+              <p>Ini adalah contoh caption, jika emang kamu butuh bantuan lebih lanjut bisa menghubungi kementrian kelautan</p>
+              <span>1 HOUR AGO</span>
+            </div>
+          </div>
         </div>
+        <!-- end postingan -->
       </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
-    <script src="script/data/users.js"></script>
-    <script src="script/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="script/dataParser.js"></script>
+    <script src="script/home.js"></script>
   </body>
 </html>
