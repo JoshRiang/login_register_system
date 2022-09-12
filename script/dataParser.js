@@ -1,5 +1,8 @@
 const database = supabase.createClient("https://yyndohsyyiveciumdjrj.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5bmRvaHN5eWl2ZWNpdW1kanJqIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NjIzNTk3MzksImV4cCI6MTk3NzkzNTczOX0.OcV8ko_ruHhEu3qyboas2zXllbcQMLdkjXCNZNwh3CM");
 
+
+
+
 const getUsersData = async () => {
   const res = await database.from("users").select("*");
   if (res) {
