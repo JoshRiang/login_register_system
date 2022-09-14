@@ -1,4 +1,5 @@
 window.onload = () => {
+  $("body").css("padding-top", "58px");
   // carrousel function
   var galleryImage = $(".slideshow");
   var images = ["https://www.instagram.com/static/images/homepage/screenshots/screenshot4-2x.png/8e9224a71939.png", "https://www.instagram.com/static/images/homepage/screenshots/screenshot3-2x.png/fe2540684ab2.png", "https://www.instagram.com/static/images/homepage/screenshots/screenshot2-2x.png/80b8aebdea57.png", "https://www.instagram.com/static/images/homepage/screenshots/screenshot1-2x.png/cfd999368de3.png"];
@@ -24,27 +25,21 @@ function togglePasswordVisibility() {
   }
 }
 
-function signIn() {
-  var users = getUsersData();
+async function signIn() {
   $("#loginButton").attr("disabled", true).css("background-color", "#b2dffc").text("Signing In");
-  users.then((data) => {
-    $("#loginButton").attr("disabled", false).css("background-color", "#0095f6").text("Sign In");
-    var email = $("#emailUsername-login-input").val();
-    var pass = $("#password-login-input").val();
-    // find user
-    var user = data.find((user) => user.email === email || user.username === email);
-    if (user) {
-      if (user.password == md5(pass)) {
-        sessionStorage.removeItem("email");
-        sessionStorage.removeItem("password");
-        sessionStorage.setItem("email", user.email);
-        sessionStorage.setItem("password", user.password);
-        window.location.href = "index.html";
-      } else {
-        $("#alert-login").text("Sorry, your password was incorrect. Please double-check your password.");
-      }
+  var email = $("#emailUsername-login-input").val();
+  var password = $("#password-login-input").val();
+  var userData = {
+    email: email,
+    password: password,
+  };
+  await database.auth.signIn(userData).then((response) => {
+    if (response.error) {
+      $("#alert-login").text("Invalid credentials. Please check your username or password and try again.");
+      $("#loginButton").removeAttr("disabled").css("background-color", "#0095f6").text("Log In");
     } else {
-      $("#alert-login").text("The username you entered doesn't belong to an account. Please check your username and try again.");
+      localStorage.setItem("user_id", response.user.id);
+      window.location.href = "index.html";
     }
   });
 }

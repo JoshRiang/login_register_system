@@ -1,5 +1,3 @@
-// input id emailUsername_forgot_input
-
 function setTempVar(isi) {
   // local storage
   localStorage.setItem("temp", isi);
@@ -18,43 +16,47 @@ function notif(text) {
   }, 5000);
 }
 
-// checking on click forgot_pass_btn
+const isEmail = (email) => {
+  // checking userInput is a email or not
+  var re = /\S+@\S+\.\S+/;
+  return re.test(email);
+};
+
+window.onload = () => {
+  const user = database.auth.user();
+  if (get("type") == "recovery" && user) {
+    // change the button to change password
+    $("#forgot_pass_btn").text("Change Password");
+    $("#label_emailUsername_forgot_input").text("New Password");
+  }
+};
+
 $("#forgot_pass_btn").click(() => {
+  const user = database.auth.user();
   let userInput = $("#emailUsername_forgot_input").val();
-  let users = getUsersData();
-  if ($("#forgot_pass_btn").text() == "Change Password") {
-    users.then((data) => {
-      var userEmail = getTempVar();
-      userInput = md5(userInput);
-      var update = updateUserPassword(userEmail, userInput);
-      $("#forgot_pass_btn").text("Changing Password").attr("disabled", true).css("background-color", "#b2dffc");
-      update.then((data) => {
-        if (data == "success") {
-          // remove local storage temp
-          localStorage.removeItem("temp");
-          $("#forgot_pass_btn").text("Password Changed").attr("disabled", true).css("background-color", "#b2dffc");
-          setTimeout(() => {
-            window.location.href = "index.html";
-          }, 2000);
-        } else {
-          notif("Failed to change password");
-          $("#forgot_pass_btn").text("Change Password").attr("disabled", false).css("background-color", "#007bff");
-        }
-      });
+  if (get("type") == "recovery" && user) {
+    if (!checkingNewPassword(userInput)) return notif("Check again your password input")
+
+    updateUserPassword(userInput).then((res) => {
+      $("#forgot_pass_btn").text("Changing Password").attr("disabled", true);
+      if (res) notif("Something went wrong, please try again later");
+      else {
+        $("#forgot_pass_btn").text("Success...").attr("disabled", true);
+        notif("Password changed successfully");
+        setTimeout(() => {
+          window.location.href = "login.html";
+        }, 2000);
+      }
     });
   } else {
-    $("#forgot_pass_btn").attr("disabled", true).css("background-color", "#b2dffc").html("Sending");
-    users.then((data) => {
-      $("#forgot_pass_btn").attr("disabled", false).css("background-color", "#0095f6").html("Send Login Link");
-      let user = data.find((user) => user.email === userInput || user.username === userInput);
-      if (user) {
-        setTempVar(user.email);
-        $("#emailUsername_forgot_input").val("").attr("placeholder", "Your new password");
-        $("#forgot_pass_btn").text("Change Password").attr("disabled", true).css("background-color", "#b2dffc");
-        updateUserProfile(user.email);
-      } else {
-        notif("User not found");
+    if (!isEmail(userInput)) return notif("Please input a valid email");
+    $("#forgot_pass_btn").html("Checking...").attr("disabled", true);
+    resetUserPassword(userInput).then((res) => {
+      $("#forgot_pass_btn").html("Send Login Link").attr("disabled", false);
+      if (res.error) {
+        return notif("Please dont spam, try again after a while.");
       }
+      return notif("Done, check your email.");
     });
   }
 });
@@ -121,18 +123,10 @@ function checkingNewPassword(pass) {
 
 $("#emailUsername_forgot_input").on("keyup", () => {
   let userInput = $("#emailUsername_forgot_input").val();
-  if ($("#forgot_pass_btn").text() == "Change Password") {
-    if (checkingNewPassword(userInput)) {
-      $("#forgot_pass_btn").attr("disabled", false).css("background-color", "#0095f6");
-    } else {
-      $("#forgot_pass_btn").attr("disabled", true).css("background-color", "#b2dffc");
-    }
+  // checking length of input
+  if (userInput.length > 6) {
+    $("#forgot_pass_btn").attr("disabled", false).css("background-color", "#0095f6");
   } else {
-    // checking length of input
-    if (userInput.length > 6) {
-      $("#forgot_pass_btn").attr("disabled", false).css("background-color", "#0095f6");
-    } else {
-      $("#forgot_pass_btn").attr("disabled", true).css("background-color", "#b2dffc");
-    }
+    $("#forgot_pass_btn").attr("disabled", true).css("background-color", "#b2dffc");
   }
 });

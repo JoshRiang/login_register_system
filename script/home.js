@@ -1,50 +1,31 @@
 // check if session login or not
 // window on load
 $(window).on("load", () => {
-  if (!sessionStorage.getItem("email")) {
-    window.location.href = "login.html";
-  }
-  var user = getUsersData(); // get all users data
-  user.then((data) => {
-    var user = data.find((user) => user.email === sessionStorage.getItem("email")); // find user data from users data
-    if (user) {
-      // store my current data to session storage
-      sessionStorage.setItem("name", user.username);
-      sessionStorage.setItem("full_name", user.full_name);
-      sessionStorage.setItem("profile_pic", user.profile_pic);
-      if (sessionStorage.getItem("password") != user.password) {
-        window.location.href = "login.html";
-      }
+  setTimeout(() => {
+    var user = database.auth.user();
+    if (!user) {
+      window.location.href = "login.html";
     }
-  });
-
-  loadPage();
+    var user = getUserData(localStorage.getItem("user_id"), "", ""); // get all users data
+    user.then((data) => {
+      // store my current data to session storage
+      sessionStorage.setItem("name", data.username);
+      sessionStorage.setItem("full_name", data.full_name);
+      sessionStorage.setItem("profile_pic", data.profile_pic);
+      sessionStorage.setItem("email", data.email);
+      loadPage();
+    });
+  }, 800);
 });
 
 // load page
 function loadPage() {
-  var user = getUsersData(); // get all users data
-  user.then((data) => {
-    var user = data.find((user) => user.email === sessionStorage.getItem("email")); // find user data from users data
-    if (user) {
-      $(".user_username").text(user.username);
-      $(".user_fullname").text(user.full_name);
-      $(".user_profile_pic").attr("src", user.profile_pic); // set user profile pic
-    }
-  });
+  $(".user_username").text(sessionStorage.getItem("name"));
+  $(".user_fullname").text(sessionStorage.getItem("full_name"));
+
+  $("#postUsername").html("<img class='me-3 user_profile_pic img-fluid m-0 p-0 rounded-circle ratio ratio-1x1' style='width: 40px' alt='prof_pic' />" + sessionStorage.getItem("full_name"));
+  $(".user_profile_pic").attr("src", sessionStorage.getItem("profile_pic")); // set user profile pic
 }
-
-// load all posts
-// function loadAllPosts() {
-//   var posts = getPostsData(); // get all posts data
-//   posts.then((data) => {
-//     data.forEach((posts) => {
-//       var post = `
-
-//       `;
-//     });
-//   });
-// }
 
 function modalEditProfile() {
   $("#modal_edit_profile").removeClass("d-none").addClass("d-block");
@@ -80,20 +61,18 @@ function editProfile() {
     profile_pic = "https://cdn.discordapp.com/attachments/716472193046806629/1018022736595005481/unknown.png";
   }
   // checking profile pic link end with .png or .jpg
-  if (!profile_pic.endsWith(".png") && !profile_pic.endsWith(".jpg")) {
+  if (!profile_pic.endsWith(".png") && !profile_pic.endsWith(".jpg") && !profile_pic.endsWith(".jpeg")) {
     console.log("profile pic is not end with .png or .jpg");
     profile_pic = "https://cdn.discordapp.com/attachments/716472193046806629/1018022736595005481/unknown.png";
   }
   // checking if username is already taken
   user.then((data) => {
     var user = data.find((user) => user.username === username); // find user data from users data
-    if (user) {
-      if (user.email != sessionStorage.getItem("email")) {
-        console.log("username is already taken");
-        $("#alert_edit_profile_modal").text("Username is already taken");
-        $("#btn_edit_profile").attr("disabled", false).text("Update");
-        return;
-      }
+    if (user && user.email != sessionStorage.getItem("email")) {
+      console.log("username is already taken");
+      $("#alert_edit_profile_modal").text("Username is already taken");
+      $("#btn_edit_profile").attr("disabled", false).text("Update");
+      return;
     }
     $("#btn_edit_profile").attr("disabled", false);
     // update user data
@@ -102,7 +81,7 @@ function editProfile() {
       full_name: full_name,
       profile_pic: profile_pic,
     };
-    var update = updateUserProfile(sessionStorage.getItem("email"), dataUpdate);
+    var update = updateUserProfile(localStorage.getItem("user_id"), dataUpdate);
     update.then((data2) => {
       // update session storage
       sessionStorage.setItem("name", username);
@@ -125,5 +104,9 @@ function editProfile() {
 function logOut() {
   // clear session storage
   sessionStorage.clear();
-  window.location.href = "login.html";
+  // clear local storage
+  localStorage.clear();
+  database.auth.signOut().then(() => {
+    window.location.href = "login.html";
+  });
 }

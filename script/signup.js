@@ -13,28 +13,40 @@ function signUp() {
   var pass = $("#password_signup_input").val();
   var fullName = $("#fullname_signup_input").val();
   var username = $("#username_signup_input").val();
-  var pass = md5(pass);
+
   var user = {
     email: email,
     password: pass,
+  };
+
+  var userProfile = {
+    profile_pic: "https://cdn.discordapp.com/attachments/716472193046806629/1018022736595005481/unknown.png",
     full_name: fullName,
     username: username,
   };
-  var status = uploadNewUserData(user);
+  // var status = uploadNewUserData(user);
   $("#signup-button").attr("disabled", true).css("background-color", "#b2dffc").text("Signing up...");
-  status.then((data) => {
-    console.dir(data);
-    if (data) {
-      $("#signup-button").attr("disabled", true).css("background-color", "#0095f6").text("Success!");
-      setTimeout(() => {
-        window.location.href = "login.html";
-      }, 2000);
-    } else {
+  database.auth.signUp(user).then((response) => {
+    // adding id to userprofile object
+    userProfile.id = response?.user?.id;
+    userProfile.email = response?.user?.email;
+    if (response.error) {
       $("#signup-button").attr("disabled", true).css("background-color", "#b2dffc").text("Something Went Wrong");
       setTimeout(() => {
         window.location.href = "signup.html";
       }, 2000);
+      return;
     }
+    $("#signup-button").attr("disabled", true).css("background-color", "#0095f6").text("Success!");
+    database
+      .from("profiles")
+      .upsert(userProfile, { returning: "minimal" })
+      .then((response) => {
+        console.log(response);
+        setTimeout(() => {
+          window.location.href = "login.html";
+        }, 2000);
+      });
   });
 }
 
@@ -84,7 +96,7 @@ function checkingSignUpInput() {
   // checking email from function checkingEmailValidation()
   if (checkingEmailValidation() != true) {
     $("#email_element_signup").removeClass("opacity-0 fa-circle-check text-secondary").addClass("text-danger opacity-1 fa-circle-xmark");
-    // return "email_taken";
+    return "email_taken";
   } else {
     $("#email_element_signup").removeClass("fa-circle-xmark text-danger opacity-0").addClass("opacity-1 text-secondary fa-circle-check");
   }
@@ -112,7 +124,7 @@ function checkingSignUpInput() {
     return false;
   }
 
-  // checking full name 
+  // checking full name
   if (fullName.length < 5) {
     return false;
   }
@@ -126,9 +138,9 @@ function checkingSignUpInput() {
     return "email_taken";
   }
 
-  if (isUsernameExist.length > 0) {
-    return "username_taken";
-  }
+  // if (isUsernameExist.length > 0) {
+  //   return "username_taken";
+  // }
 
   // checking password length more than 8 characters
   if (pass.length < 8) {
@@ -184,7 +196,7 @@ function checkingSignUpInput() {
       special = true;
     }
   }
-  if (number == false ) {
+  if (number == false) {
     $("#alert-signup").text("Your password must have atleast 1 number");
     return false;
   } else if (uppercase == false) {
