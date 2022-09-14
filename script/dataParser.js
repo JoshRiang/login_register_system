@@ -28,7 +28,7 @@ const getUserData = async (id, email, username) => {
 };
 
 const resetUserPassword = async (email) => {
-  const data = await database.auth.api.resetPasswordForEmail(email);
+  const data = await database.auth.api.resetPasswordForEmail(email, {redirectTo:"https://joshriang.github.io/login_register_system/"});
   return data;
 };
 
